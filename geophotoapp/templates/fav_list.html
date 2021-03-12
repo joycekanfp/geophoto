@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+
+{% block main_content %}
+    {% csrf_token %}
+
+    <div class="container">  
+        {% for author in test %}
+            <li>{{ author|safe }}</li>
+        {% endfor %}
+    </div>
+{% endblock %}
