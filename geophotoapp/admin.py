@@ -16,5 +16,9 @@ class presetListAdmin(admin.ModelAdmin):
     search_fields = ('name','latitude','longitude',)
     ordering = ('name',)
 
+class geoPhotoAdmin(admin.ModelAdmin):
+    list_display = ('title',)
+
 admin.site.register(FavList, favListAdmin)
 admin.site.register(PresetList, presetListAdmin)
+admin.site.register(GeoPhoto, geoPhotoAdmin)

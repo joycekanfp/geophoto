@@ -1,46 +1,80 @@
 {% extends "base.html" %}
 
+{% block javascript %}
+    <script>
+
+        function submitAction() {
+            $('#btnSearch').prop('disabled', true);
+            $('#spinner').show();
+
+            return true;
+        }
+    </script>
+{% endblock javascript %}
+
 {% block main_content %}
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" onsubmit="return submitAction();">
     {% csrf_token %}
-    
-    <br><br>
-    <div class="container">  
-        <div class="row">     
-            <div class="col-3"></div> 
+
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-3"></div>
             <div class="col-6" align="center">
                 <h1>Search Photos by Geolocation</h1>
             </div>
-            <div class="col-3"></div> 
+            <div class="col-3"></div>
         </div>
         <br><br>
-        <div class="row">     
-            <div class="col-3"></div> 
+        <div class="row">
+            <div class="col-3"></div>
             <div class="col-3">
-                {{ form.latitude.label_tag }}                                    
+                {{ form.latitude.label_tag }}
             </div>
-            <div class="col-3">{{ form.latitude }}</div> 
+            <div class="col-3">{{ form.latitude }}</div>
             <div class="col-3">
                 <small class="text-danger">{{ form.latitude.errors }}</small>
-            </div> 
-        </div>
-        <div class="row">     
-            <div class="col-3"></div> 
-            <div class="col-3">
-                {{ form.longitude.label_tag }}                                    
             </div>
-            <div class="col-3">{{ form.longitude }}</div> 
+        </div>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3">
+                {{ form.longitude.label_tag }}
+            </div>
+            <div class="col-3">{{ form.longitude }}</div>
             <div class="col-3">
                 <small class="text-danger">{{ form.longitude.errors }}</small>
-            </div> 
+            </div>
         </div>
         <br>
-        <div class="row">     
-            <div class="col-3"></div> 
-            <div class="col-6" align="center">
-                <button type="submit">Search</button>
+
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <small><font color="red">*</font>Note: You can get lat-long values from <a href="https://nominatim.openstreetmap.org/" target="_blank">OpenStreetMap</a></small>
             </div>
-            <div class="col-3"></div> 
+            <div class="col-3"></div>
+        </div>
+        <br>
+
+        <div id="spinner" class="container" style="display:none;">
+            <br>
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-2">
+                    <div class="spinner-border text-info"></div>
+                </div>
+                <div class="col-5"></div>
+            </div>
+            <br>
+        </div>
+
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6" align="center">
+                <button id="btnSearch" type="submit" class="btn btn-secondary">Search</button>
+            </div>
+            <div class="col-3"></div>
         </div>
     </div>
     </form>

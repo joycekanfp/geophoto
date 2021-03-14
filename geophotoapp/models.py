@@ -6,11 +6,12 @@ class GeoPhoto(models.Model):
     latitude=models.FloatField()
     longitude=models.FloatField()
     photo_url = models.CharField(max_length=500, unique=True)
+    photo_thumbnail_url = models.CharField(max_length=500)
     date_added = models.DateField(default=datetime.datetime.now)
 
     def __str__(self):
         return self.title
-    
+
 class PresetList(models.Model):
     name = models.CharField(max_length=250)
     latitude=models.FloatField()

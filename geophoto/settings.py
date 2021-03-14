@@ -25,7 +25,9 @@ SECRET_KEY = 'gjx1g_-c47+9ah31d5tch!v+jvtykl(dk6&#xd&yg+9b)-=afz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['joycekan.pythonanywhere.com']
+
+MEDIA_ROOT = '/home/joycekan/app'
 
 
 # Application definition
@@ -119,3 +121,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/home/joycekan/app/geophoto/static'
+
+API_KEY = "6d008f4996e6551c30f2d7dcdeaff899"
+SECRET_API_KEY = "4771f81c40909cc1"
+

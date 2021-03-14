@@ -1,92 +1,165 @@
 {% extends "base.html" %}
 
-<script>
-    $(document).ready(function() {
-        var table = $('#example').DataTable( {
-            responsive: true
+{% block javascript %}
+    <script>
+
+        $(document).ready(function() {
+            $('#result').DataTable({
+                "columnDefs":[
+                    {
+                        "targets":[5],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ],
+                "order": [[ 5, "desc" ]]
+            });
         } );
-    
-        new $.fn.dataTable.FixedHeader( table );
-    } );
-</script>
+
+        $('a.delete_action').on('click', function(event) {
+            if (confirm('Are you sure you want to remove this location from your preset list?')) {
+              event.preventDefault();
+
+                $.ajax({
+                  type: 'GET',
+                  url: "{% url 'delete_from_preset' %}",
+                  data: {
+                      loc_id: $(this).data('arg1')
+                  },
+                  success: function (response) {
+                        if(response["msg"] == "success"){
+                            alert("Geolocation has been successfully removed from preset list!");
+                        }
+
+                        window.location.href = {% url 'preset_list' %};
+                    },
+                    error: function (response) {
+                        alert("Error removing Geolocation from preset list!");
+                    }
+                })
+            }
+        });
+
+        $('a.btn-info').on('click', function(event) {
+            $('#spinner').show();
+        });
+    </script>
+{% endblock javascript %}
 
 {% block main_content %}
     <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    
-    <br><br>
-    <div class="container">  
-        <div class="row">     
-            <div class="col-3"></div> 
-            <div class="col-6" align="center">
+
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10" align="center">
                 <h1>Search Photos by Preset Geolocation</h1>
             </div>
-            <div class="col-3"></div> 
+            <div class="col-2"></div>
         </div>
         <br><br>
-        <div class="row">     
-            <div class="col-3"></div> 
-            <div class="col-3">                
-                {{ form.name.label_tag }}                                       
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3">
+                {{ form.name.label_tag }}
             </div>
-            <div class="col-3">{{ form.name }}</div> 
+            <div class="col-3">{{ form.name }}</div>
             <div class="col-3">
                 <small class="text-danger">{{ form.name.errors }}</small>
-            </div> 
-        </div>
-        <div class="row">     
-            <div class="col-3"></div> 
-            <div class="col-3">
-                {{ form.latitude.label_tag }}                                    
             </div>
-            <div class="col-3">{{ form.latitude }}</div> 
+        </div>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3">
+                {{ form.latitude.label_tag }}
+            </div>
+            <div class="col-3">{{ form.latitude }}</div>
             <div class="col-3">
                 <small class="text-danger">{{ form.latitude.errors }}</small>
-            </div> 
-        </div>
-        <div class="row">     
-            <div class="col-3"></div> 
-            <div class="col-3">
-                {{ form.longitude.label_tag }}                                   
             </div>
-            <div class="col-3">{{ form.longitude }}</div> 
+        </div>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3">
+                {{ form.longitude.label_tag }}
+            </div>
+            <div class="col-3">{{ form.longitude }}</div>
             <div class="col-3">
                 <small class="text-danger">{{ form.longitude.errors }}</small>
-            </div> 
+            </div>
         </div>
         <br>
-        <div class="row">     
-            <div class="col-3"></div> 
+        <div class="row">
+            <div class="col-3"></div>
             <div class="col-6" align="center">
-                <button type="submit">Add to Preset List</button>
+                <button type="submit" class="btn btn-secondary">Add to Preset List</button>
             </div>
-            <div class="col-3"></div> 
+            <div class="col-3"></div>
+        </div>
+
+        <div id="spinner" class="container" style="display:none;">
+            <br>
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-2">
+                    <div class="spinner-border text-info"></div>
+                </div>
+                <div class="col-5"></div>
+            </div>
+            <br>
         </div>
     </div>
     </form>
 
-    <br><br>
+    <br>
 
-    <div class="container">  
-        {{ result_string }}
-        <table id="example" class="table table-striped table-bordered nowrap" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for obj in preset_list %}
-                    <tr>
-                        <td>{{ obj.name }}</td>
-                        <td>{{ obj.latitude }}</td>
-                        <td>{{ obj.longitude }}</td>
-                    </tr>                    
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10">
+                {% if result_string != '' %}
+                    <font color="red">Note: </font>
+                {% endif %}
+                {{ result_string }}
+            </div>
+            <div class="col-2"></div>
+        </div>
 
+        <br>
+
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10">
+                <table id="result" class="table table-striped table-bordered nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Action (Search)</th>
+                            <th>Action (Delete)</th>
+                            <th>Date Added</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in preset_list %}
+                            <tr>
+                                <td>{{ obj.name }}</td>
+                                <td>{{ obj.latitude }}</td>
+                                <td>{{ obj.longitude }}</td>
+                                <td align="center"><a href="{{obj.latitude}}/{{obj.longitude}}" class="btn btn-info">Search</a></td>
+                                <td align="center"><a href="#" class="delete_action btn btn-danger" data-arg1="{{ obj.id }}">Remove</a></td>
+                                <td>{{ obj.id }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-2"></div>
+        </div>
     </div>
+
+
 {% endblock %}

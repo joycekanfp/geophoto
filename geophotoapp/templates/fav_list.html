@@ -1,12 +1,77 @@
 {% extends "base.html" %}
 
+{% block javascript %}
+    <script>
+
+        $(document).ready(function() {
+            $('#result').DataTable();
+        } );
+
+        $('a.delete_action').on('click', function(event) {
+            if (confirm('Are you sure you want to remove this photo from your favourite list?')) {
+              event.preventDefault();
+
+                $.ajax({
+                  type: 'GET',
+                  url: "{% url 'delete_from_fav' %}",
+                  data: {
+                      geophoto_id: $(this).data('arg1')
+                  },
+                  success: function (response) {
+                        if(response["msg"] == "success"){
+                            alert("Photo has been successfully removed from favourite list!");
+                        }
+
+                        window.location.href = {% url 'fav_list' %};
+                    },
+                    error: function (response) {
+                        alert("Error removing photo from favourite list!");
+                    }
+                })
+            }
+        })
+    </script>
+
+{% endblock javascript %}
 
 {% block main_content %}
     {% csrf_token %}
-
-    <div class="container">  
-        {% for author in test %}
-            <li>{{ author|safe }}</li>
-        {% endfor %}
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10"><h1 align="center">{{ result_string }}</h1></div>
+            <div class="col-2"></div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10">
+                <table id="result" class="table table-striped table-bordered nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Thumbnail Image</th>
+                            <th>Image Title</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in result_list %}
+                            <tr>
+                                <td>
+                                    <a href="{{ obj.photo_url }}" target="_blank" title="{{ obj.photo_url }}">
+                                      <img src="{{ obj.photo_thumbnail_url }}">
+                                    </a>
+                                </td>
+                                <td>{{ obj.title }}</td>
+                                <td align="center"><a href="#" class="delete_action btn btn-danger" data-arg1="{{ obj.id }}">Remove</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-2"></div>
+        </div>
     </div>
+
 {% endblock %}
